@@ -160,7 +160,7 @@ class DocumentService implements DocumentServiceInterface
 
         $response = $this->client->updateDocument(
             $document->getId(),
-            $document->getData(),
+            ['doc' => $document->getData()],
             $document->getIndex(),
             $document->getType()
         );
