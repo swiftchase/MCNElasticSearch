@@ -53,7 +53,7 @@ use MCNElasticSearch\Service\Search\PaginatorAdapter\DoctrineOptions as Options;
 class Doctrine extends AbstractAdapter
 {
     /**
-     * @var \Doctrine\Common\Collections\ObjectRepository
+     * @var ObjectRepository
      */
     protected $repository;
 
@@ -68,7 +68,12 @@ class Doctrine extends AbstractAdapter
     protected $options;
 
     /**
-     * @param \Doctrine\Common\Persistence\ObjectRepository   $repository
+     * @var array
+     */
+    protected $aggregations;
+
+    /**
+     * @param ObjectRepository   $repository
      * @param \MCNElasticSearch\Options\ObjectMetadataOptions $objectMetadata
      * @param DoctrineOptions                                 $options
      */
@@ -100,9 +105,17 @@ class Doctrine extends AbstractAdapter
         $response = $this->searchable->search($this->query);
 
         $meta  = $this->extractMetaInformation($response);
+        $this->aggregations = $response->getAggregations();
         $items = $this->load(array_keys($meta));
-
         return $this->merge($meta, $items);
+    }
+
+    /**
+     * @return array
+     */
+    public function getAggregations()
+    {
+        return $this->aggregations;
     }
 
     /**
@@ -122,11 +135,11 @@ class Doctrine extends AbstractAdapter
         /** @var $result \Elastica\Result */
         foreach ($results as $result) {
             $data = [];
-            foreach ($result->getHit() as $key => $value) {
-                if (substr($key, 0, 1) != '_') {
-                    $data[$key] = $value;
-                }
-            }
+//            foreach ($result->getHit() as $key => $value) {
+//                if (substr($key, 0, 1) != '_') {
+//                    $data[$key] = $value;
+//                }
+//            }
 
             $dataSet[$result->getId()] = $data;
         }
